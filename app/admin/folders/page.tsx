@@ -11,14 +11,14 @@ const COLOR_OPTIONS  = ["#e8a900","#2196b3","#e91e8c","#9b59b6","#27ae60","#e74c
 const DEFAULT_FORM   = { name:"", description:"", emoji:"🪷", color:"#e8a900", tag:"" };
 
 export default function AdminFoldersPage() {
-  const [folders, setFolders]     = useState<Folder[]>([]);
-  const [loading, setLoading]     = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [editing, setEditing]     = useState<Folder | null>(null);
-  const [form, setForm]           = useState(DEFAULT_FORM);
-  const [saving, setSaving]       = useState(false);
+  const [folders, setFolders]       = useState<Folder[]>([]);
+  const [loading, setLoading]       = useState(true);
+  const [showModal, setShowModal]   = useState(false);
+  const [editing, setEditing]       = useState<Folder | null>(null);
+  const [form, setForm]             = useState(DEFAULT_FORM);
+  const [saving, setSaving]         = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [toast, setToast]         = useState<{msg:string;type:"success"|"error"}|null>(null);
+  const [toast, setToast]           = useState<{msg:string;type:"success"|"error"}|null>(null);
 
   const showToast = (msg: string, type: "success"|"error" = "success") => {
     setToast({msg,type}); setTimeout(() => setToast(null), 3000);
@@ -61,17 +61,26 @@ export default function AdminFoldersPage() {
   return (
     <div className="flex min-h-screen" style={{background:"var(--cream)"}}>
       <AdminNav />
-      <main className="flex-1 ml-56 p-6 md:p-10">
-        <div className="flex items-center justify-between mb-8">
-          <div>
+
+      {/* Same offset strategy as Dashboard */}
+      <main className="flex-1 lg:ml-56 p-4 sm:p-6 md:p-8 lg:p-10 pb-24 md:pb-10">
+
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6 md:mb-8 md:pl-0 pl-0 pt-2 md:pt-0">
+          <div className="md:pl-12 lg:pl-0">
             <span className="section-label" style={{color:"rgba(58,46,26,.38)",fontSize:".52rem"}}>Admin</span>
-            <h1 className="font-cinzel font-bold title-gold" style={{fontSize:"clamp(1.2rem,2.5vw,1.8rem)"}}>📂 Gallery Folders</h1>
+            <h1 className="font-cinzel font-bold title-gold" style={{fontSize:"clamp(1.1rem,2.5vw,1.8rem)"}}>📂 Gallery Folders</h1>
           </div>
-          <button onClick={openCreate} className="cta-btn px-6 py-2.5 text-xs font-bold">+ New Folder</button>
+          <button onClick={openCreate} className="cta-btn px-4 sm:px-6 py-2 sm:py-2.5 text-xs font-bold whitespace-nowrap">
+            + New Folder
+          </button>
         </div>
 
         {loading ? (
-          <div className="text-center py-20"><div className="text-4xl animate-float inline-block">🪷</div><p className="font-fell italic mt-3 text-sm" style={{color:"rgba(58,46,26,.45)"}}>Loading…</p></div>
+          <div className="text-center py-20">
+            <div className="text-4xl animate-float inline-block">🪷</div>
+            <p className="font-fell italic mt-3 text-sm" style={{color:"rgba(58,46,26,.45)"}}>Loading…</p>
+          </div>
         ) : folders.length === 0 ? (
           <div className="text-center py-24">
             <div className="text-5xl mb-4">📂</div>
@@ -79,35 +88,51 @@ export default function AdminFoldersPage() {
             <button onClick={openCreate} className="cta-btn px-8 py-3 text-xs font-bold">✦ Create First Folder ✦</button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
             {folders.map((f) => (
               <div key={f._id} className="admin-card overflow-hidden" style={{opacity:deletingId===f._id?0.5:1}}>
                 <div style={{height:4,background:`linear-gradient(90deg,${f.color},${f.color}66)`}}/>
-                <div className="p-5">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{f.emoji}</span>
-                      <div>
-                        <h3 className="font-cinzel-reg font-bold text-sm" style={{color:"var(--ink)"}}>{f.name}</h3>
-                        <p className="font-fell italic text-xs" style={{color:"rgba(58,46,26,.42)"}}>/{f.slug}</p>
+                <div className="p-4 sm:p-5">
+                  <div className="flex items-start justify-between mb-3 gap-2">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                      <span className="text-xl sm:text-2xl shrink-0">{f.emoji}</span>
+                      <div className="min-w-0">
+                        <h3 className="font-cinzel-reg font-bold text-sm truncate" style={{color:"var(--ink)"}}>{f.name}</h3>
+                        <p className="font-fell italic text-xs truncate" style={{color:"rgba(58,46,26,.42)"}}>/{f.slug}</p>
                       </div>
                     </div>
-                    <span className="px-2 py-0.5 rounded-full font-cinzel-reg" style={{fontSize:".5rem",background:f.isPublished?"rgba(39,174,96,.12)":"rgba(150,150,150,.1)",color:f.isPublished?"#27ae60":"#888",border:`1px solid ${f.isPublished?"rgba(39,174,96,.3)":"rgba(150,150,150,.2)"}`}}>
+                    <span className="px-2 py-0.5 rounded-full font-cinzel-reg shrink-0" style={{fontSize:".5rem",background:f.isPublished?"rgba(39,174,96,.12)":"rgba(150,150,150,.1)",color:f.isPublished?"#27ae60":"#888",border:`1px solid ${f.isPublished?"rgba(39,174,96,.3)":"rgba(150,150,150,.2)"}`}}>
                       {f.isPublished?"Published":"Draft"}
                     </span>
                   </div>
-                  {f.description && <p className="font-fell italic text-xs mb-3" style={{color:"rgba(58,46,26,.48)"}}>{f.description}</p>}
-                  <div className="flex items-center gap-3 mb-4">
+
+                  {f.description && (
+                    <p className="font-fell italic text-xs mb-3" style={{color:"rgba(58,46,26,.48)"}}>{f.description}</p>
+                  )}
+
+                  <div className="flex items-center gap-3 mb-4 flex-wrap">
                     <span className="font-cinzel-reg text-xs font-bold" style={{color:f.color}}>{f.mediaCount} items</span>
-                    {f.tag && <span className="px-2 py-0.5 rounded-full font-cinzel-reg" style={{fontSize:".5rem",background:"rgba(160,110,0,.08)",color:"var(--gold-dark)",border:"1px solid rgba(160,110,0,.2)"}}>{f.tag}</span>}
+                    {f.tag && (
+                      <span className="px-2 py-0.5 rounded-full font-cinzel-reg" style={{fontSize:".5rem",background:"rgba(160,110,0,.08)",color:"var(--gold-dark)",border:"1px solid rgba(160,110,0,.2)"}}>
+                        {f.tag}
+                      </span>
+                    )}
                   </div>
+
+                  {/* Action buttons — stack nicely on small cards */}
                   <div className="flex items-center gap-2 flex-wrap">
-                    <button onClick={()=>openEdit(f)} className="flex-1 py-2 rounded-xl font-cinzel-reg text-xs border transition-colors" style={{background:"rgba(160,110,0,.06)",borderColor:"rgba(160,110,0,.2)",color:"var(--gold-dark)"}}>✏️ Edit</button>
-                    <button onClick={()=>togglePublish(f)} className="flex-1 py-2 rounded-xl font-cinzel-reg text-xs border transition-colors" style={{background:f.isPublished?"rgba(231,76,60,.06)":"rgba(39,174,96,.06)",borderColor:f.isPublished?"rgba(231,76,60,.2)":"rgba(39,174,96,.2)",color:f.isPublished?"#e74c3c":"#27ae60"}}>
+                    <button onClick={()=>openEdit(f)} className="flex-1 py-2 rounded-xl font-cinzel-reg text-xs border transition-colors" style={{background:"rgba(160,110,0,.06)",borderColor:"rgba(160,110,0,.2)",color:"var(--gold-dark)",minWidth:"4rem"}}>
+                      ✏️ Edit
+                    </button>
+                    <button onClick={()=>togglePublish(f)} className="flex-1 py-2 rounded-xl font-cinzel-reg text-xs border transition-colors" style={{background:f.isPublished?"rgba(231,76,60,.06)":"rgba(39,174,96,.06)",borderColor:f.isPublished?"rgba(231,76,60,.2)":"rgba(39,174,96,.2)",color:f.isPublished?"#e74c3c":"#27ae60",minWidth:"4.5rem"}}>
                       {f.isPublished?"Unpublish":"Publish"}
                     </button>
-                    <Link href={`/folders/${f.slug}`} target="_blank" className="px-3 py-2 rounded-xl font-cinzel-reg text-xs border transition-colors" style={{background:"rgba(33,150,179,.06)",borderColor:"rgba(33,150,179,.2)",color:"#0d7a99",textDecoration:"none"}}>🔗</Link>
-                    <button onClick={()=>del(f)} disabled={!!deletingId} className="px-3 py-2 rounded-xl text-xs border transition-colors" style={{background:"rgba(231,76,60,.06)",borderColor:"rgba(231,76,60,.15)",color:"#c0392b"}}>🗑️</button>
+                    <Link href={`/folders/${f.slug}`} target="_blank" className="px-3 py-2 rounded-xl font-cinzel-reg text-xs border transition-colors" style={{background:"rgba(33,150,179,.06)",borderColor:"rgba(33,150,179,.2)",color:"#0d7a99",textDecoration:"none"}}>
+                      🔗
+                    </Link>
+                    <button onClick={()=>del(f)} disabled={!!deletingId} className="px-3 py-2 rounded-xl text-xs border transition-colors" style={{background:"rgba(231,76,60,.06)",borderColor:"rgba(231,76,60,.15)",color:"#c0392b"}}>
+                      🗑️
+                    </button>
                   </div>
                 </div>
               </div>
@@ -118,9 +143,20 @@ export default function AdminFoldersPage() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4" style={{background:"rgba(58,46,26,.5)",backdropFilter:"blur(4px)"}} onClick={()=>setShowModal(false)}>
-          <div className="w-full max-w-lg rounded-2xl p-6 md:p-8" style={{background:"#fffdf5",border:"2px solid rgba(160,110,0,.3)"}} onClick={e=>e.stopPropagation()}>
-            <h2 className="font-cinzel-reg font-bold mb-5 text-base" style={{color:"var(--ink)"}}>{editing?"✏️ Edit Folder":"📂 New Folder"}</h2>
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:px-4"
+          style={{background:"rgba(58,46,26,.5)",backdropFilter:"blur(4px)"}}
+          onClick={()=>setShowModal(false)}
+        >
+          <div
+            className="w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl p-5 sm:p-6 md:p-8 max-h-[92dvh] overflow-y-auto"
+            style={{background:"#fffdf5",border:"2px solid rgba(160,110,0,.3)"}}
+            onClick={e=>e.stopPropagation()}
+          >
+            <h2 className="font-cinzel-reg font-bold mb-5 text-base" style={{color:"var(--ink)"}}>
+              {editing?"✏️ Edit Folder":"📂 New Folder"}
+            </h2>
+
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
                 <label className="section-label" style={{fontSize:".54rem"}}>Folder Name *</label>
@@ -155,8 +191,11 @@ export default function AdminFoldersPage() {
                 </div>
               </div>
             </div>
+
             <div className="flex gap-3 mt-5">
-              <button onClick={()=>setShowModal(false)} className="flex-1 py-2.5 rounded-xl font-fell italic text-sm border transition-colors" style={{color:"rgba(58,46,26,.55)",borderColor:"rgba(160,110,0,.2)"}}>Cancel</button>
+              <button onClick={()=>setShowModal(false)} className="flex-1 py-2.5 rounded-xl font-fell italic text-sm border transition-colors" style={{color:"rgba(58,46,26,.55)",borderColor:"rgba(160,110,0,.2)"}}>
+                Cancel
+              </button>
               <button onClick={save} disabled={saving} className="flex-1 cta-btn py-2.5 text-xs font-bold" style={{opacity:saving?0.6:1}}>
                 {saving?"Saving…":editing?"✓ Update":"✦ Create"}
               </button>
@@ -166,8 +205,10 @@ export default function AdminFoldersPage() {
       )}
 
       {toast && (
-        <div className="fixed bottom-6 right-6 z-[9999] px-5 py-3 rounded-xl font-fell italic text-sm shadow-xl text-white"
-          style={{background:toast.type==="success"?"rgba(39,174,96,.92)":"rgba(192,57,43,.92)",backdropFilter:"blur(6px)"}}>
+        <div
+          className="fixed bottom-24 md:bottom-6 right-4 sm:right-6 z-[9999] px-5 py-3 rounded-xl font-fell italic text-sm shadow-xl text-white"
+          style={{background:toast.type==="success"?"rgba(39,174,96,.92)":"rgba(192,57,43,.92)",backdropFilter:"blur(6px)"}}
+        >
           {toast.msg}
         </div>
       )}
