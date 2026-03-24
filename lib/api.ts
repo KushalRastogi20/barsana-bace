@@ -2,7 +2,7 @@ import axios from "axios";
 import { Leela } from "./data";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL ?? "",
+  baseURL: process.env.NEXTAUTH_URL ?? "",
   timeout: 4000,
 });
 
