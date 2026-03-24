@@ -18,6 +18,6 @@ const AdminUserSchema = new Schema<IAdminUser>(
 
 const AdminUser: Model<IAdminUser> =
   mongoose.models.AdminUser ??
-  mongoose.model<IAdminUser>("AdminUser", AdminUserSchema);
+  mongoose.model<IAdminUser>("AdminUser", AdminUserSchema, "admin");
 
 export default AdminUser;

@@ -15,11 +15,26 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        await connectDB();
-        const user = await AdminUser.findOne({ email: credentials.email.toLowerCase() });
-        if (!user) return null;
+        const dbres = await connectDB();
+        // console.log("DB Connection:", dbres);
+        console.log("Attempting login for:", credentials.email);
+        // const user = await AdminUser.findOne({ email: credentials.email.toLowerCase() });
+        const user = await AdminUser.findOne({
+          email: { $regex: `^${credentials.email}$`, $options: "i" },
+        });
+        if (!user){
+          console.log("User not found:", credentials.email);
+          return null;}
 
-        const valid = await bcrypt.compare(credentials.password, user.passwordHash);
+        // const valid = await bcrypt.compare(
+        //   credentials.password,
+        //   user.passwordHash,
+        // );
+        const valid = await bcrypt.compare(
+          credentials.password,
+          user.passwordHash,
+        );
+        console.log("Password valid:", valid, credentials.password, user.passwordHash);
         if (!valid) return null;
 
         return { id: user._id.toString(), email: user.email, name: user.name };
